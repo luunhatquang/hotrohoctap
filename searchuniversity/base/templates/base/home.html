@@ -1,0 +1,115 @@
+{% extends 'base/base_layout.html'%}
+{% load static %}
+
+{% block content_inner %}
+<div class="breadcrumb">
+                <a href="{% url 'home' %}">Tra cứu đại học</a>
+                <span>›</span>
+                <span>Tìm trường</span>
+            </div>
+
+            <div class="tab-navigation">
+                <div class="tab-item active">
+                    <span class="tab-icon"><i class="fas fa-university"></i></span>
+                    <a href ="{% url 'home' %}">Tìm trường</a>
+                </div>
+                <div class="tab-item">
+                    <span class="tab-icon"><i class="fas fa-book"></i></span>
+                    <a href = "{% url 'home_program' %}">Tìm ngành</a>
+                </div>
+            </div>
+
+            <h2 class="section-title">Tìm kiếm trường đại học</h2>
+
+            <form method="GET" action="{% url 'home' %}">
+                <div class="search-section">
+                    <select class="dropdown-select" name="system">
+                        <option value="">Hệ đại học</option>
+                        <option value="dai_hoc">Đại học</option>
+                        <option value="cao_dang">Cao đẳng</option>
+                    </select>
+
+                    <div class="search-input-wrapper">
+                        <span class="search-icon"><i class="fas fa-search"></i></span>
+                        <input type="text" 
+                               name="q" 
+                               class="search-input" 
+                               placeholder="Nhập tên trường hoặc mã trường"
+                               value="{{ request.GET.q }}">
+                        {% if request.GET.q %}
+                        <span class="clear-search" onclick="clearSearch()"><i class="fas fa-times"></i></span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Region Filter -->
+                <div class="region-filter">
+                    <a href="{% url 'home' %}?q=HN" class="region-btn {% if request.GET.q == 'HN' %}active{% endif %}">Hà Nội</a>
+                    <a href="{% url 'home' %}?q=HCM" class="region-btn {% if request.GET.q == 'HCM' %}active{% endif %}">TP HCM</a>
+                    <a href="{% url 'home' %}?q=DN" class="region-btn {% if request.GET.q == 'DN' %}active{% endif %}">Đà Nẵng</a>
+                    <a href="{% url 'home' %}?q=CT" class="region-btn {% if request.GET.q == 'CT' %}active{% endif %}">Cần Thơ</a>
+                    <a href="{% url 'home' %}?q=OTHER" class="region-btn {% if request.GET.q == 'OTHER' %}active{% endif %}">Tỉnh thành khác</a>
+                </div>
+            </form>
+
+            <!-- Action Links -->
+            <div class="action-links">
+                <a href="{% url 'home' %}" class="action-link">Xem tất cả</a>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats">
+                Có <strong>{{ uni_count }}</strong> trường đại học
+            </div>
+
+            <!-- University List -->
+            <div class="uni-list">
+                {% for uni in list_uni %}
+                <div class="uni-item">
+                    <div class="uni-code">{{ uni.code }}</div>
+                    <div class="uni-info">
+                        <a href="{% url 'uni' uni.code %}" class="uni-name">
+                            {{ uni.name }}
+                        </a>
+                        <div class="uni-location">{{ uni.get_region_display }}</div>
+                    </div>
+                    <div class="uni-favorite">
+                        <i class="far fa-star"></i>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="uni-item">
+                    <div class="uni-info">
+                        <p>Không tìm thấy trường đại học nào phù hợp.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if list_uni.paginator.num_pages > 1 %}
+            <div class="pagination">
+                {% if list_uni.has_previous %}
+                <a class="page-link" href="{% url 'home' %}?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ list_uni.previous_page_number }}">« Trước</a>
+                {% else %}
+                <span class="page-link disabled">« Trước</span>
+                {% endif %}
+
+                {% for i in list_uni.paginator.page_range %}
+                    {% if list_uni.number == i %}
+                    <span class="page-number active">{{ i }}</span>
+                    {% else %}
+                    <a class="page-number" href="{% url 'home' %}?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ i }}">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if list_uni.has_next %}
+                <a class="page-link" href="{% url 'home' %}?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ list_uni.next_page_number }}">Sau »</a>
+                {% else %}
+                <span class="page-link disabled">Sau »</span>
+                {% endif %}
+            </div>
+            {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %}

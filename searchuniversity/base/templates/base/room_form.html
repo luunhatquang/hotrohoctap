@@ -1,0 +1,198 @@
+{% extends 'main.html'%}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/update_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container form-container">
+    <a href="{% url 'home' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span>Quay lại trang chủ</span>
+    </a>
+
+    <div class="form-card">
+        <h2>
+            <i class="fas fa-user-edit"></i>
+            Tạo hồ sơ học sinh
+        </h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            Điền thông tin của bạn để tạo hồ sơ tuyển sinh
+        </p>
+
+        <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                {% if forloop.counter0|divisibleby:2 and not forloop.last %}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">
+                                {% if 'school' in field.name %}
+                                    <i class="fas fa-university"></i>
+                                {% elif 'program' in field.name %}
+                                    <i class="fas fa-book"></i>
+                                {% elif 'score' in field.name %}
+                                    <i class="fas fa-chart-line"></i>
+                                {% elif 'ielts' in field.name %}
+                                    <i class="fas fa-language"></i>
+                                {% elif 'transcript' in field.name %}
+                                    <i class="fas fa-file-upload"></i>
+                                {% else %}
+                                    <i class="fas fa-pen"></i>
+                                {% endif %}
+                                {{ field.label }}
+                            </label>
+                            
+                            {% if field.field.widget.input_type == 'file' %}
+                                <input type="file" 
+                                       id="{{ field.id_for_label }}"
+                                       name="{{ field.name }}"
+                                       class="form-control">
+                            {% elif field.field.widget.input_type == 'select' %}
+                                {{ field }}
+                            {% else %}
+                                <input type="{{ field.field.widget.input_type|default:'text' }}" 
+                                       id="{{ field.id_for_label }}"
+                                       name="{{ field.name }}"
+                                       class="form-control"
+                                       placeholder="{{ field.label }}"
+                                       {% if field.field.required %}required{% endif %}
+                                       value="{{ field.value|default:'' }}">
+                            {% endif %}
+                            
+                            {% if field.help_text %}
+                                <span class="helptext">{{ field.help_text|safe }}</span>
+                            {% endif %}
+                            
+                            {% if field.errors %}
+                                <ul class="errorlist">
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        {% if not forloop.last %}
+                            {% with forloop.counter as current_index %}
+                                {% for inner_field in form %}
+                                    {% if forloop.counter0 == current_index %}
+                                        <div class="form-group">
+                                            <label for="{{ inner_field.id_for_label }}">
+                                                {% if 'school' in inner_field.name %}
+                                                    <i class="fas fa-university"></i>
+                                                {% elif 'program' in inner_field.name %}
+                                                    <i class="fas fa-book"></i>
+                                                {% elif 'score' in inner_field.name %}
+                                                    <i class="fas fa-chart-line"></i>
+                                                {% elif 'ielts' in inner_field.name %}
+                                                    <i class="fas fa-language"></i>
+                                                {% elif 'transcript' in inner_field.name %}
+                                                    <i class="fas fa-file-upload"></i>
+                                                {% else %}
+                                                    <i class="fas fa-pen"></i>
+                                                {% endif %}
+                                                {{ inner_field.label }}
+                                            </label>
+                                            
+                                            {% if inner_field.field.widget.input_type == 'file' %}
+                                                <input type="file" 
+                                                       id="{{ inner_field.id_for_label }}"
+                                                       name="{{ inner_field.name }}"
+                                                       class="form-control">
+                                            {% elif inner_field.field.widget.input_type == 'select' %}
+                                                {{ inner_field }}
+                                            {% else %}
+                                                <input type="{{ inner_field.field.widget.input_type|default:'text' }}" 
+                                                       id="{{ inner_field.id_for_label }}"
+                                                       name="{{ inner_field.name }}"
+                                                       class="form-control"
+                                                       placeholder="{{ inner_field.label }}"
+                                                       {% if inner_field.field.required %}required{% endif %}
+                                                       value="{{ inner_field.value|default:'' }}">
+                                            {% endif %}
+                                            
+                                            {% if inner_field.help_text %}
+                                                <span class="helptext">{{ inner_field.help_text|safe }}</span>
+                                            {% endif %}
+                                            
+                                            {% if inner_field.errors %}
+                                                <ul class="errorlist">
+                                                    {% for error in inner_field.errors %}
+                                                        <li>{{ error }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                {% elif forloop.last %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">
+                            {% if 'school' in field.name %}
+                                <i class="fas fa-university"></i>
+                            {% elif 'program' in field.name %}
+                                <i class="fas fa-book"></i>
+                            {% elif 'score' in field.name %}
+                                <i class="fas fa-chart-line"></i>
+                            {% elif 'ielts' in field.name %}
+                                <i class="fas fa-language"></i>
+                            {% elif 'transcript' in field.name %}
+                                <i class="fas fa-file-upload"></i>
+                            {% else %}
+                                <i class="fas fa-pen"></i>
+                            {% endif %}
+                            {{ field.label }}
+                        </label>
+                        
+                        {% if field.field.widget.input_type == 'file' %}
+                            <input type="file" 
+                                   id="{{ field.id_for_label }}"
+                                   name="{{ field.name }}"
+                                   class="form-control">
+                        {% elif field.field.widget.input_type == 'select' %}
+                            {{ field }}
+                        {% else %}
+                            <input type="{{ field.field.widget.input_type|default:'text' }}" 
+                                   id="{{ field.id_for_label }}"
+                                   name="{{ field.name }}"
+                                   class="form-control"
+                                   placeholder="{{ field.label }}"
+                                   {% if field.field.required %}required{% endif %}
+                                   value="{{ field.value|default:'' }}">
+                        {% endif %}
+                        
+                        {% if field.help_text %}
+                            <span class="helptext">{{ field.help_text|safe }}</span>
+                        {% endif %}
+                        
+                        {% if field.errors %}
+                            <ul class="errorlist">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-save"></i> Lưu hồ sơ
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'showQLDS' %}" class="action-link">
+                <i class="fas fa-eye"></i>
+                Xem danh sách hồ sơ
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

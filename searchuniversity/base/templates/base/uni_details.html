@@ -1,0 +1,123 @@
+{% extends 'base/base_layout.html'%}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/uni_details.css' %}">
+{% endblock %}
+
+{% block content_inner %}
+<div class="breadcrumb">
+    <a href="{% url 'home' %}">Tra cứu đại học</a>
+    <span>›</span>
+    <span>{{ uni_room.name }}</span>
+</div>
+
+<!-- University Header -->
+<div class="program-header" style="background: linear-gradient(135deg, #0066cc 0%, #004499 100%); padding: 30px; border-radius: 12px; color: white; margin-bottom: 30px;">
+    <div class="program-title-section">
+        <div class="program-code-badge" style="background: rgba(255,255,255,0.2); padding: 6px 16px; border-radius: 20px; font-size: 14px; display: inline-block; margin-bottom: 15px;">
+            {{ uni_room.code }}
+        </div>
+        <div>
+            <h1 class="program-title" style="font-size: 32px; margin-bottom: 15px; color: white;">{{ uni_room.name }}</h1>
+            <div class="uni-contact-info" style="display: flex; flex-wrap: wrap; gap: 25px; font-size: 14px;">
+                {% if uni_room.address %}
+                <div class="uni-contact-item" style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ uni_room.address }}</span>
+                </div>
+                {% endif %}
+                
+                {% if uni_room.phone %}
+                <div class="uni-contact-item" style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ uni_room.phone }}</span>
+                </div>
+                {% endif %}
+                
+                {% if uni_room.website %}
+                <div class="uni-contact-item" style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-globe"></i>
+                    <a href="{{ uni_room.website }}" target="_blank" style="color: white; text-decoration: underline;">Website</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Programs Section -->
+<div class="info-section" style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <h2 class="section-heading" style="font-size: 24px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; color: #333;">
+        <i class="fas fa-book"></i>
+        Danh sách ngành học
+    </h2>
+
+    <div class="uni-list">
+        {% for p in program %}
+        <div class="uni-item">
+            <div class="uni-code">{{ p.code }}</div>
+            <div class="uni-info">
+                <a href="{% url 'detailProgram' p.code %}" class="uni-name">
+                    {{ p.name }}
+                </a>
+                <div class="uni-location">
+                    {% if p.admissions.first %}
+                        Điểm chuẩn {{ p.admissions.first.year }}: <strong style="color: #d32f2f;">{{ p.admissions.first.score }}</strong>
+                    {% endif %}
+                    {% if p.tuition %}
+                        {% if p.admissions.first %} • {% endif %}
+                        Học phí: <strong style="color: #ff6b35;">{{ p.tuition }} triệu/năm</strong>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="uni-favorite">
+                <i class="far fa-star"></i>
+            </div>
+        </div>
+        {% empty %}
+        <div class="uni-item">
+            <div class="uni-info">
+                <p>Chưa có ngành nào cho trường này.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if program.paginator.num_pages > 1 %}
+    <div class="pagination" style="margin-top: 20px;">
+        {% if program.has_previous %}
+        <a class="page-link" href="{% url 'uni' uni_room.code %}?page={{ program.previous_page_number }}">« Trước</a>
+        {% else %}
+        <span class="page-link disabled">« Trước</span>
+        {% endif %}
+
+        {% for i in program.paginator.page_range %}
+            {% if program.number == i %}
+            <span class="page-number active">{{ i }}</span>
+            {% else %}
+            <a class="page-number" href="{% url 'uni' uni_room.code %}?page={{ i }}">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if program.has_next %}
+        <a class="page-link" href="{% url 'uni' uni_room.code %}?page={{ program.next_page_number }}">Sau »</a>
+        {% else %}
+        <span class="page-link disabled">Sau »</span>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Action Buttons -->
+<div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+    <a href="{% url 'home' %}" style="padding: 12px 30px; background: #f0f0f0; color: #333; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;">
+        <i class="fas fa-arrow-left"></i>
+        Quay lại danh sách
+    </a>
+    <a href="{% url 'createQLDS' %}" style="padding: 12px 30px; background: linear-gradient(135deg, #0066cc 0%, #004499 100%); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;">
+        <i class="fas fa-file-alt"></i>
+        Tạo hồ sơ ứng tuyển
+    </a>
+</div>
+{% endblock %}

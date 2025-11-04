@@ -1,0 +1,329 @@
+{% extends 'main.html'%}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/student_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container profile-container">
+    <a href="{% url 'home' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span>Quay lại trang chủ</span>
+    </a>
+
+    {% for profile in stprofile %}
+    <div class="profile-card">
+        <div class="profile-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-user-circle" style="font-size: 48px;"></i>
+                <div>
+                    <h2>Hồ sơ học sinh</h2>
+                    <p style="margin: 0; opacity: 0.9;">{{ profile.user.username }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-body">
+            <!-- Thông tin cá nhân -->
+            <div class="info-section">
+                <h3>
+                    <i class="fas fa-user"></i>
+                    Thông tin cá nhân
+                </h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Họ và tên</div>
+                        <div class="info-value">{{ profile.full_name|default:"Chưa cập nhật" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Tuổi</div>
+                        <div class="info-value">{{ profile.age|default:"N/A" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Số điện thoại</div>
+                        <div class="info-value">{{ profile.phone|default:"Chưa cập nhật" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Địa chỉ</div>
+                        <div class="info-value">{{ profile.address|default:"Chưa cập nhật" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mục tiêu tuyển sinh -->
+            <div class="info-section">
+                <h3>
+                    <i class="fas fa-bullseye"></i>
+                    Mục tiêu tuyển sinh
+                </h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Trường mục tiêu</div>
+                        <div class="info-value">{{ profile.target_school.name|default:"Chưa cập nhật" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Ngành mục tiêu</div>
+                        <div class="info-value">{{ profile.target_program.name|default:"Chưa cập nhật" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Điểm mục tiêu</div>
+                        <div class="info-value">{{ profile.target_score|default:"N/A" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Điểm thi chứng chỉ -->
+            <div class="info-section">
+                <h3>
+                    <i class="fas fa-certificate"></i>
+                    Điểm thi chứng chỉ
+                </h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Điểm IELTS</div>
+                        <div class="info-value">{{ profile.ielts_score|default:"N/A" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Điểm HSA (ĐGNL HN)</div>
+                        <div class="info-value">{{ profile.hsa_score|default:"N/A" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Điểm TSA (ĐGNL Bách Khoa)</div>
+                        <div class="info-value">{{ profile.tsa_score|default:"N/A" }}</div>
+                    </div>
+                </div>
+
+                {% if profile.transcript %}
+                <div style="margin-top: 20px;">
+                    <a href="{{ profile.transcript.url }}" class="btn-outline" target="_blank">
+                        <i class="fas fa-file-download"></i>
+                        Xem học bạ
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Kết quả thi thử -->
+            <div class="info-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0;">
+                        <i class="fas fa-clipboard-list"></i>
+                        Kết quả thi thử
+                    </h3>
+                    <a href="{% url 'addTrialExam' profile.id %}" class="btn-add">
+                        <i class="fas fa-plus"></i>
+                        Thêm điểm thi thử
+                    </a>
+                </div>
+                
+                {% if profile.trial_exams.all %}
+                    <div class="exam-list">
+                        {% for exam in profile.trial_exams.all %}
+                        <div class="exam-card">
+                            <div class="exam-header">
+                                <span class="exam-badge">Lần {{ exam.attempt_number }}</span>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <span class="exam-date">{% if exam.date_exam %}{{ exam.date_exam|date:"d/m/Y" }}{% else %}{{ exam.created_at|date:"d/m/Y" }}{% endif %}</span>
+                                    <a href="{% url 'editTrialExam' profile.id exam.id %}" class="btn-edit-mini" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button onclick="confirmDelete('{% url 'deleteTrialExam' profile.id exam.id %}', 'thi thử Lần {{ exam.attempt_number }}')" 
+                                            class="btn-delete-mini" title="Xóa">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="exam-details">
+                                <div class="exam-row">
+                                    <span class="subject-label">{{ exam.subject1_name|default:"Môn 1" }}:</span>
+                                    <span class="subject-score">{{ exam.subject1_score|default:0 }} điểm</span>
+                                </div>
+                                <div class="exam-row">
+                                    <span class="subject-label">{{ exam.subject2_name|default:"Môn 2" }}:</span>
+                                    <span class="subject-score">{{ exam.subject2_score|default:0 }} điểm</span>
+                                </div>
+                                <div class="exam-row">
+                                    <span class="subject-label">{{ exam.subject3_name|default:"Môn 3" }}:</span>
+                                    <span class="subject-score">{{ exam.subject3_score|default:0 }} điểm</span>
+                                </div>
+                                <div class="exam-row exam-total">
+                                    <span class="subject-label"><strong>Tổng điểm:</strong></span>
+                                    <span class="subject-score total-score">{{ exam.total_score }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard" style="font-size: 48px; color: #ddd; margin-bottom: 10px;"></i>
+                        <p>Chưa có dữ liệu thi thử</p>
+                        <p style="font-size: 14px; color: #999;">Nhấn nút "Thêm điểm thi thử" để bắt đầu nhập điểm</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Kết quả thi HSA -->
+            <div class="info-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <h3 style="margin: 0;">
+                            <i class="fas fa-brain"></i>
+                            Kết quả thi HSA (ĐGNL ĐHQGHN)
+                        </h3>
+                        <p style="font-size: 13px; color: #666; margin: 5px 0 0 0; font-style: italic;">
+                            Điểm đánh giá năng lực Đại học Quốc gia Hà Nội
+                        </p>
+                    </div>
+                    <a href="{% url 'addHsaExam' profile.id %}" class="btn-add">
+                        <i class="fas fa-plus"></i>
+                        Thêm điểm HSA
+                    </a>
+                </div>
+                
+                {% if profile.hsa_exams.all %}
+                    <div class="exam-list">
+                        {% for exam in profile.hsa_exams.all %}
+                        <div class="exam-card hsa-card">
+                            <div class="exam-header">
+                                <span class="exam-badge hsa-badge">Lần {{ exam.attempt_number }}</span>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <span class="exam-date">{% if exam.date_exam %}{{ exam.date_exam|date:"d/m/Y" }}{% else %}{{ exam.created_at|date:"d/m/Y" }}{% endif %}</span>
+                                    <a href="{% url 'editHsaExam' profile.id exam.id %}" class="btn-edit-mini hsa-edit" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button onclick="confirmDelete('{% url 'deleteHsaExam' profile.id exam.id %}', 'thi HSA Lần {{ exam.attempt_number }}')" 
+                                            class="btn-delete-mini" title="Xóa">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="exam-details">
+                                <div class="exam-row">
+                                    <span class="subject-label">Phần 1: Tư duy định lượng:</span>
+                                    <span class="subject-score">{{ exam.subject1_score|default:0 }} điểm</span>
+                                </div>
+                                <div class="exam-row">
+                                    <span class="subject-label">Phần 2: Tư duy định tính:</span>
+                                    <span class="subject-score">{{ exam.subject2_score|default:0 }} điểm</span>
+                                </div>
+                                <div class="exam-row">
+                                    <span class="subject-label">Phần 3: Khoa học/Tiếng Anh:</span>
+                                    <span class="subject-score">{{ exam.subject3_score|default:0 }} điểm</span>
+                                </div>
+                                <div class="exam-row exam-total">
+                                    <span class="subject-label"><strong>Tổng điểm HSA:</strong></span>
+                                    <span class="subject-score total-score hsa-total">{{ exam.total_score }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-brain" style="font-size: 48px; color: #ddd; margin-bottom: 10px;"></i>
+                        <p>Chưa có dữ liệu thi HSA</p>
+                        <p style="font-size: 14px; color: #999;">Nhấn nút "Thêm điểm HSA" để bắt đầu nhập điểm</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Kết quả thi TSA -->
+            <div class="info-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <h3 style="margin: 0;">
+                            <i class="fas fa-cogs"></i>
+                            Kết quả thi TSA (ĐGNL Bách Khoa)
+                        </h3>
+                        <p style="font-size: 13px; color: #666; margin: 5px 0 0 0; font-style: italic;">
+                            Điểm đánh giá năng lực Đại học Bách Khoa
+                        </p>
+                    </div>
+                    <a href="{% url 'addTsaExam' profile.id %}" class="btn-add">
+                        <i class="fas fa-plus"></i>
+                        Thêm điểm TSA
+                    </a>
+                </div>
+                
+                {% if profile.tsa_exams.all %}
+                    <div class="exam-list">
+                        {% for exam in profile.tsa_exams.all %}
+                        <div class="exam-card tsa-card">
+                            <div class="exam-header">
+                                <span class="exam-badge tsa-badge">Lần {{ exam.attempt_number }}</span>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <span class="exam-date">{% if exam.date_exam %}{{ exam.date_exam|date:"d/m/Y" }}{% else %}{{ exam.created_at|date:"d/m/Y" }}{% endif %}</span>
+                                    <a href="{% url 'editTsaExam' profile.id exam.id %}" class="btn-edit-mini tsa-edit" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button onclick="confirmDelete('{% url 'deleteTsaExam' profile.id exam.id %}', 'thi TSA Lần {{ exam.attempt_number }}')" 
+                                            class="btn-delete-mini" title="Xóa">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="exam-details">
+                                <div class="exam-row">
+                                    <span class="subject-label">Tư duy Toán học:</span>
+                                    <span class="subject-score">{{ exam.subject1_score|default:0 }} điểm</span>
+                                </div>
+                                <div class="exam-row">
+                                    <span class="subject-label">Tư duy đọc hiểu:</span>
+                                    <span class="subject-score">{{ exam.subject2_score|default:0 }} điểm</span>
+                                </div>
+                                <div class="exam-row">
+                                    <span class="subject-label">Tư duy Khoa học/Giải quyết vấn đề:</span>
+                                    <span class="subject-score">{{ exam.subject3_score|default:0 }} điểm</span>
+                                </div>
+                                <div class="exam-row exam-total">
+                                    <span class="subject-label"><strong>Tổng điểm TSA:</strong></span>
+                                    <span class="subject-score total-score tsa-total">{{ exam.total_score }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-cogs" style="font-size: 48px; color: #ddd; margin-bottom: 10px;"></i>
+                        <p>Chưa có dữ liệu thi TSA</p>
+                        <p style="font-size: 14px; color: #999;">Nhấn nút "Thêm điểm TSA" để bắt đầu nhập điểm</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="profile-footer">
+            <a href="{% url 'updateQLDS' profile.id %}" class="btn-outline">
+                <i class="fas fa-edit"></i>
+                Chỉnh sửa hồ sơ
+            </a>
+            <button onclick="confirmDeleteProfile('{% url 'deleteUserProfile' profile.id %}')" class="btn-delete-profile">
+                <i class="fas fa-trash-alt"></i>
+                Xóa toàn bộ hồ sơ
+            </button>
+        </div>
+    </div>
+    {% empty %}
+    <div class="profile-card">
+        <div class="profile-body">
+            <div class="empty-state">
+                <i class="fas fa-user-slash" style="font-size: 64px; color: #ddd; margin-bottom: 20px;"></i>
+                <h3>Chưa có hồ sơ nào</h3>
+                <p>Bạn chưa tạo hồ sơ học sinh.</p>
+                <a href="{% url 'createQLDS' %}" class="btn-outline" style="margin-top: 20px;">
+                    <i class="fas fa-plus"></i>
+                    Tạo hồ sơ mới
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'js/student_profile.js' %}"></script>
+{% endblock %}
