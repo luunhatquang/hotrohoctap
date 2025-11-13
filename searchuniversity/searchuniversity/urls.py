@@ -1,12 +1,21 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 from django.conf.urls.static import static
 
+def health_check(request):
+    return JsonResponse({
+        'status': 'ok',
+        'message': 'Django is running!',
+        'debug': settings.DEBUG,
+        'database': settings.DATABASES['default']['ENGINE']
+    })
+
 urlpatterns = [
+    path("", include('base.urls')),
     path("admin/", admin.site.urls),
-    path('', include('base.urls'))
+    path("health/", health_check, name="health"),
 ]
 
 # Serve media files in development
