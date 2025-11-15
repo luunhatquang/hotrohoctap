@@ -1,7 +1,13 @@
-from django.forms import ModelForm, DateInput
-from .models import StudentProfile, TrialExam, HsaExam, TsaExam
+from django.forms import ModelForm, DateInput, CharField, Select
+from .models import StudentProfile, TrialExam, HsaExam, TsaExam, Program
 
 class StudentProfileForm(ModelForm):
+    target_program = CharField(
+        label='Nhóm ngành mục tiêu',
+        required=False,
+        widget=Select(choices=[('', '---------')] + Program.TYPE, attrs={'class': 'form-control'})
+    )
+    
     class Meta:
         model = StudentProfile
         fields = [
@@ -13,8 +19,6 @@ class StudentProfileForm(ModelForm):
             'target_program', 
             'target_score',   
             'ielts_score',    
-            'hsa_score',      
-            'tsa_score'
         ]
         labels = {
             'full_name': 'Họ và tên',
@@ -22,11 +26,9 @@ class StudentProfileForm(ModelForm):
             'phone': 'Số điện thoại',
             'address': 'Địa chỉ',
             'target_school': 'Trường mục tiêu',
-            'target_program': 'Ngành mục tiêu',
+            'target_program': 'Nhóm ngành mục tiêu',
             'target_score': 'Điểm mục tiêu',
             'ielts_score': 'Điểm IELTS',
-            'hsa_score': 'Điểm HSA (ĐGNL HN)',
-            'tsa_score': 'Điểm TSA (ĐGNL Bách Khoa)'
         }
         help_texts = {
             'full_name': 'VD: Nguyễn Văn A',
@@ -34,6 +36,20 @@ class StudentProfileForm(ModelForm):
             'phone': 'VD: 0123456789',
             'target_score': 'Tổng điểm 3 môn mục tiêu',
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.target_program:
+            self.initial['target_program'] = self.instance.target_program.type
+    
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        program_type = self.cleaned_data.get('target_program')
+        if program_type:
+            instance.target_program = None
+        if commit:
+            instance.save()
+        return instance
 
 class TrialExamForm(ModelForm):
     class Meta:

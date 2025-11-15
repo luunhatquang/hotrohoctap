@@ -74,9 +74,6 @@ class StudentProfile(models.Model):
     target_score = models.FloatField(null=True, blank=True, help_text="Điểm mục tiêu")
 
     ielts_score = models.FloatField(null=True, blank=True)
-    hsa_score = models.FloatField(null=True, blank=True)
-    tsa_score = models.FloatField(null=True, blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

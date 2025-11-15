@@ -63,8 +63,14 @@
                         <div class="info-value">{{ profile.target_school.name|default:"Chưa cập nhật" }}</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Ngành mục tiêu</div>
-                        <div class="info-value">{{ profile.target_program.name|default:"Chưa cập nhật" }}</div>
+                        <div class="info-label">Nhóm ngành mục tiêu</div>
+                        <div class="info-value">
+                            {% if profile.target_program %}
+                                {{ profile.target_program.get_type_display }}
+                            {% else %}
+                                Chưa cập nhật
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Điểm mục tiêu</div>
@@ -84,24 +90,7 @@
                         <div class="info-label">Điểm IELTS</div>
                         <div class="info-value">{{ profile.ielts_score|default:"N/A" }}</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Điểm HSA (ĐGNL HN)</div>
-                        <div class="info-value">{{ profile.hsa_score|default:"N/A" }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Điểm TSA (ĐGNL Bách Khoa)</div>
-                        <div class="info-value">{{ profile.tsa_score|default:"N/A" }}</div>
-                    </div>
                 </div>
-
-                {% if profile.transcript %}
-                <div style="margin-top: 20px;">
-                    <a href="{{ profile.transcript.url }}" class="btn-outline" target="_blank">
-                        <i class="fas fa-file-download"></i>
-                        Xem học bạ
-                    </a>
-                </div>
-                {% endif %}
             </div>
 
             <!-- Kết quả thi thử -->
@@ -235,10 +224,10 @@
                     <div>
                         <h3 style="margin: 0;">
                             <i class="fas fa-cogs"></i>
-                            Kết quả thi TSA (ĐGNL Bách Khoa)
+                            Kết quả thi TSA (ĐGTD Đại học Bách Khoa Hà Nội)
                         </h3>
                         <p style="font-size: 13px; color: #666; margin: 5px 0 0 0; font-style: italic;">
-                            Điểm đánh giá năng lực Đại học Bách Khoa
+                            Điểm đánh giá tư duy Đại học Bách Khoa Hà Nội
                         </p>
                     </div>
                     <a href="{% url 'addTsaExam' profile.id %}" class="btn-add">

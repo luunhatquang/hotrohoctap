@@ -183,8 +183,7 @@ def createQLDS(request):
             profile.user = request.user
             profile.save()
             messages.success(request, 'Tạo hồ sơ thành công!')
-            redirect('home')
-            return;
+            return redirect('showQLDS')
     context = {'form': form}
     return render(request, 'base/room_form.html',context)
 

@@ -176,60 +176,6 @@
                             </ul>
                         {% endif %}
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="{{ form.hsa_score.id_for_label }}">
-                            <i class="fas fa-graduation-cap"></i>
-                            {{ form.hsa_score.label }}
-                        </label>
-                        {{ form.hsa_score }}
-                        {% if form.hsa_score.errors %}
-                            <ul class="errorlist">
-                                {% for error in form.hsa_score.errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="{{ form.tsa_score.id_for_label }}">
-                            <i class="fas fa-graduation-cap"></i>
-                            {{ form.tsa_score.label }}
-                        </label>
-                        {{ form.tsa_score }}
-                        {% if form.tsa_score.errors %}
-                            <ul class="errorlist">
-                                {% for error in form.tsa_score.errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="{{ form.transcript.id_for_label }}">
-                            <i class="fas fa-file-upload"></i>
-                            {{ form.transcript.label }}
-                        </label>
-                        <input type="file" 
-                               id="{{ form.transcript.id_for_label }}"
-                               name="{{ form.transcript.name }}"
-                               class="form-control"
-                               accept=".pdf,.jpg,.jpeg,.png">
-                        <span class="helptext" style="font-size: 12px; color: #666;">
-                            Chấp nhận file: PDF, JPG, PNG (tối đa 5MB)
-                        </span>
-                        {% if form.transcript.errors %}
-                            <ul class="errorlist">
-                                {% for error in form.transcript.errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-                    </div>
                 </div>
             </div>
             
