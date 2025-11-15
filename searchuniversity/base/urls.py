@@ -29,5 +29,7 @@ urlpatterns = [
     path("register/", views.registerUser, name = "register"),
     
     path("home/program", views.home_program, name = "home_program"),
+    path("chat-ai/", views.chat_ai, name = "chat_ai"),
+    path("chat-ai/api/", views.chat_api, name="chat_api"),
 
 ]

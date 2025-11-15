@@ -2,13 +2,17 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import School, Program, Admission, StudentProfile, TrialExam, HsaExam, TsaExam
+from .models import School, Program, Admission, StudentProfile, TrialExam, HsaExam, TsaExam, ChatConversation, ChatMessage
 from .form import StudentProfileForm, TrialExamForm, HsaExamForm, TsaExamForm
 from django.db.models import Q
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Prefetch
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator,PageNotAnInteger, EmptyPage
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .ai_service import generate_ai_response
 
 def loginPage(request):
     page = 'login'
@@ -405,3 +409,71 @@ def detailProgram(request, program_code):
     program = Program.objects.get(code=program_code)
     context = {'program': program}
     return render(request, 'base/program_detail.html', context)
+
+@login_required(login_url='login')
+def chat_ai(request):
+    context = {
+        'page_title': 'Chat AI Tư Vấn',
+    }
+    return render(request, 'base/chat_ai.html', context)     
+
+@login_required
+@csrf_exempt
+def chat_api(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'})
+    
+    try:
+        data = json.loads(request.body)
+        user_message = data.get('message','').strip()
+        conversation_id = data.get('conservation_id')
+        
+        if not user_message:
+            return JsonResponse({'error': 'Message is required'}, status=400)
+        
+        if conversation_id:
+            try:
+                conversation = ChatConversation.objects.get(id=conversation_id, user=request.user)
+            except ChatConversation.DoesNotExist:
+                conversation = ChatConversation.objects.create(user=request.user)
+        else:
+            conversation = ChatConversation.objects.create(user=request.user)
+            conversation.title = user_message[:50] + '...' if len(user_message) > 50 else user_message
+            conversation.save()
+
+        ChatMessage.objects.create(
+            conversation=conversation,
+            role='user',
+            content=user_message
+        )
+        recent_messages = conversation.messages.all().order_by('-created_at')[:10][::-1]
+        conversation_history = [
+            {'user': msg.content if msg.role == 'user' else '', 
+             'ai': msg.content if msg.role == 'ai' else ''}
+            for msg in recent_messages
+        ]
+ 
+        ai_response = generate_ai_response(
+            user_message=user_message,
+            user=request.user,
+            conversation_history=conversation_history
+        )
+
+        ChatMessage.objects.create(
+            conversation=conversation,
+            role='ai',
+            content=ai_response
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'response': ai_response,
+            'conversation_id': conversation.id,
+            'conversation_title': conversation.title
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+        

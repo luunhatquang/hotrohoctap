@@ -172,3 +172,56 @@ class TsaExam(models.Model):
 
     def __str__(self):
         return f"TSA lần {self.attempt_number} - Tổng: {self.total_score} điểm - {self.student.user.username}"
+    
+class ChatConversation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chat_conversations')
+    title = models.CharField(max_length=255, blank=True, default='Cuộc trò chuyện mới')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+        verbose_name = "Cuộc trò chuyện"
+        verbose_name_plural = "Các cuộc trò chuyện"
+
+    def __str__(self):
+        return f"{self.user.username} - {self.title} ({self.created_at.strftime('%d/%m/%Y')})"
+
+    def get_messages_count(self):
+        """Đếm số tin nhắn trong conversation"""
+        return self.messages.count()
+
+    def get_last_message(self):
+        """Lấy tin nhắn cuối cùng"""
+        return self.messages.last()
+
+
+class ChatMessage(models.Model):
+    ROLE_CHOICES = [
+        ('user', 'User'),
+        ('ai', 'AI'),
+    ]
+    
+    conversation = models.ForeignKey(
+        ChatConversation, 
+        on_delete=models.CASCADE, 
+        related_name='messages'
+    )
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name = "Tin nhắn"
+        verbose_name_plural = "Tin nhắn"
+
+    def __str__(self):
+        preview = self.content[:50] + "..." if len(self.content) > 50 else self.content
+        return f"[{self.role}] {preview}"
+
+    def is_from_user(self):
+        return self.role == 'user'
+
+    def is_from_ai(self):
+        return self.role == 'ai'
