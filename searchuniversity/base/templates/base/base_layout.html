@@ -1,0 +1,31 @@
+{% extends 'main.html'%}
+{% load static %}
+
+{% block extra_head %}
+{% block extra_css %}
+<!-- CSS riêng cho từng trang -->
+{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="main-wrapper">
+        <div class="main-content">
+            {% block content_inner %}
+            <!-- Nội dung chính ở đây -->
+            {% endblock %}
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Sidebar content nếu cần -->
+        </aside>
+    </div>
+</div>
+
+{% block extra_js %}
+<!-- JavaScript tùy chỉnh cho từng trang -->
+{% endblock %}
+
+{% endblock content %}
+

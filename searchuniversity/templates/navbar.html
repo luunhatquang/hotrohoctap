@@ -1,0 +1,38 @@
+<nav class="navbar">
+    <div class="container">
+        <div class="navbar-content">
+            <a href="{% url 'home' %}" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Hỗ trợ học tập</h1>
+                    <div class="main-title">Tuyển sinh Đại học</div>
+                </div>
+            </a>
+
+            <ul class="nav-menu">
+                <li><a href="{% url 'createQLDS' %}" class="nav-link">Tạo hồ sơ của bạn</a></li>
+                <li><a href="{% url 'showQLDS' %}" class="nav-link">Xem hồ sơ</a></li>
+                <li><a href="{% url 'chat_ai' %}" class="nav-link"><i class="fas fa-robot"></i> Tư vấn cùng AI</a></li>
+            </ul>
+
+            <div class="user-actions">
+                <div class="social-links">
+                    <a href="https://www.facebook.com/profile.php?id=61582894479596" class="social-icon facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="social-icon twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+                {% if request.user.is_authenticated %}
+                    <span class="user-info">Xin chào, {{request.user}}</span>
+                    <a href="{% url 'logout' %}" class="logout-btn">Đăng xuất</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="logout-btn">Đăng nhập</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,306 @@
+{% extends 'base/base_layout.html'%}
+{% load static %}
+
+{% block content_inner %}
+<div class="breadcrumb">
+                <a href="{% url 'home' %}">Tra cứu đại học</a>
+                <span>›</span>
+                <span>Tìm ngành</span>
+            </div>
+
+            <div class="tab-navigation">
+                <a href="{% url 'home' %}" class="tab-item">
+                    <span class="tab-icon"><i class="fas fa-university"></i></span>
+                    <span>Tìm trường</span>
+                </a>
+                <a href="{% url 'home_program' %}" class="tab-item active">
+                    <span class="tab-icon"><i class="fas fa-book"></i></span>
+                    <span>Tìm ngành</span>
+                </a>
+            </div>
+
+            <h2 class="section-title">Tìm kiếm ngành học</h2>
+
+            <!-- Search Mode Selector -->
+            <div class="region-filter" style="margin-bottom: 20px;">
+                <button type="button" onclick="showSearchMode('category')" id="searchModeBtn1" class="region-btn {% if request.GET.search_type != 'advanced' %}active{% endif %}">
+                    <i class="fas fa-list"></i> Tìm theo loại ngành
+                </button>
+                <button type="button" onclick="showSearchMode('advanced')" id="searchModeBtn2" class="region-btn {% if request.GET.search_type == 'advanced' %}active{% endif %}">
+                    <i class="fas fa-filter"></i> Tìm nâng cao (Điểm & Học phí)
+                </button>
+                {% if user.is_authenticated %}
+                <a href="{% url 'home_program' %}{% if request.GET.select %}{% if request.GET.category %}?category={{ request.GET.category }}{% endif %}{% else %}?select=1{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% endif %}" class="region-btn {% if request.GET.select %}active{% endif %}">
+                    <i class="fas fa-star"></i> Tìm theo điểm thi thử
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Search by Category -->
+            <div id="searchByCategory" {% if request.GET.search_type == 'advanced' %}style="display: none;"{% endif %}>
+                <div class="region-filter">
+                    <a href="{% url 'home_program' %}?category=khoa_hoc_cong_nghe{% if request.GET.select %}&select=1{% endif %}" class="region-btn {% if request.GET.category == 'khoa_hoc_cong_nghe' %}active{% endif %}">
+                        <i class="fas fa-microscope"></i> Khoa học – Công nghệ – Kỹ thuật
+                    </a>
+                    <a href="{% url 'home_program' %}?category=kinh_te_quan_tri{% if request.GET.select %}&select=1{% endif %}" class="region-btn {% if request.GET.category == 'kinh_te_quan_tri' %}active{% endif %}">
+                        <i class="fas fa-chart-line"></i> Kinh tế – Quản trị – Tài chính
+                    </a>
+                    <a href="{% url 'home_program' %}?category=luat_hanh_chinh{% if request.GET.select %}&select=1{% endif %}" class="region-btn {% if request.GET.category == 'luat_hanh_chinh' %}active{% endif %}">
+                        <i class="fas fa-balance-scale"></i> Luật – Hành chính – Chính trị – Xã hội
+                    </a>
+                    <a href="{% url 'home_program' %}?category=y_duoc{% if request.GET.select %}&select=1{% endif %}" class="region-btn {% if request.GET.category == 'y_duoc' %}active{% endif %}">
+                        <i class="fas fa-heartbeat"></i> Y – Dược – Sức khỏe
+                    </a>
+                    <a href="{% url 'home_program' %}?category=nghe_thuat_thiet_ke{% if request.GET.select %}&select=1{% endif %}" class="region-btn {% if request.GET.category == 'nghe_thuat_thiet_ke' %}active{% endif %}">
+                        <i class="fas fa-palette"></i> Nghệ thuật – Thiết kế – Truyền thông
+                    </a>
+                    <a href="{% url 'home_program' %}?category=nong_lam_ngu{% if request.GET.select %}&select=1{% endif %}" class="region-btn {% if request.GET.category == 'nong_lam_ngu' %}active{% endif %}">
+                        <i class="fas fa-leaf"></i> Nông – Lâm – Ngư nghiệp – Môi trường
+                    </a>
+                    <a href="{% url 'home_program' %}?category=toan_thong_ke{% if request.GET.select %}&select=1{% endif %}" class="region-btn {% if request.GET.category == 'toan_thong_ke' %}active{% endif %}">
+                        <i class="fas fa-calculator"></i> Toán – Thống kê – Khoa học dữ liệu
+                    </a>
+                    <a href="{% url 'home_program' %}?category=giao_duc_du_lich{% if request.GET.select %}&select=1{% endif %}" class="region-btn {% if request.GET.category == 'giao_duc_du_lich' %}active{% endif %}">
+                        <i class="fas fa-chalkboard-teacher"></i> Giáo dục – Du lịch – Dịch vụ
+                    </a>
+                </div>
+            </div>
+
+            <!-- Advanced Search (Score & Tuition) -->
+            <div id="searchByAdvanced" {% if request.GET.search_type == 'advanced' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                <form method="GET" action="{% url 'home_program' %}">
+                    <input type="hidden" name="search_type" value="advanced">
+                    <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        
+                        <!-- Category Section -->
+                        <div style="margin-bottom: 25px;">
+                            <h3 style="font-size: 16px; margin-bottom: 15px; color: #0066cc; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-list"></i> Loại ngành (không bắt buộc)
+                            </h3>
+                            <select name="category" class="search-input" style="padding: 12px; width: 100%;">
+                                <option value="">-- Tất cả loại ngành --</option>
+                                <option value="khoa_hoc_cong_nghe" {% if request.GET.category == 'khoa_hoc_cong_nghe' %}selected{% endif %}>
+                                    Khoa học – Công nghệ – Kỹ thuật
+                                </option>
+                                <option value="kinh_te_quan_tri" {% if request.GET.category == 'kinh_te_quan_tri' %}selected{% endif %}>
+                                    Kinh tế – Quản trị – Tài chính
+                                </option>
+                                <option value="luat_hanh_chinh" {% if request.GET.category == 'luat_hanh_chinh' %}selected{% endif %}>
+                                    Luật – Hành chính – Chính trị – Xã hội
+                                </option>
+                                <option value="y_duoc" {% if request.GET.category == 'y_duoc' %}selected{% endif %}>
+                                    Y – Dược – Sức khỏe
+                                </option>
+                                <option value="nghe_thuat_thiet_ke" {% if request.GET.category == 'nghe_thuat_thiet_ke' %}selected{% endif %}>
+                                    Nghệ thuật – Thiết kế – Truyền thông
+                                </option>
+                                <option value="nong_lam_ngu" {% if request.GET.category == 'nong_lam_ngu' %}selected{% endif %}>
+                                    Nông – Lâm – Ngư nghiệp – Môi trường
+                                </option>
+                                <option value="toan_thong_ke" {% if request.GET.category == 'toan_thong_ke' %}selected{% endif %}>
+                                    Toán – Thống kê – Khoa học dữ liệu
+                                </option>
+                                <option value="giao_duc_du_lich" {% if request.GET.category == 'giao_duc_du_lich' %}selected{% endif %}>
+                                    Giáo dục – Du lịch – Dịch vụ
+                                </option>
+                            </select>
+                        </div>
+
+                        <div style="border-top: 1px solid #e0e0e0; margin: 25px 0;"></div>
+
+                        <!-- Score Section -->
+                        <div style="margin-bottom: 25px;">
+                            <h3 style="font-size: 16px; margin-bottom: 15px; color: #0066cc; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-chart-line"></i> Điểm chuẩn (không bắt buộc)
+                            </h3>
+                            <div style="display: flex; gap: 15px; align-items: end;">
+                                <div style="flex: 1;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px;">
+                                        <i class="fas fa-arrow-down"></i> Điểm tối thiểu
+                                    </label>
+                                    <input type="number" 
+                                           name="min_score" 
+                                           class="search-input" 
+                                           placeholder="VD: 20"
+                                           value="{{ request.GET.min_score|default:'' }}"
+                                           step="0.25"
+                                           min="0"
+                                           max="30">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px;">
+                                        <i class="fas fa-arrow-up"></i> Điểm tối đa
+                                    </label>
+                                    <input type="number" 
+                                           name="max_score" 
+                                           class="search-input" 
+                                           placeholder="VD: 25"
+                                           value="{{ request.GET.max_score|default:'' }}"
+                                           step="0.25"
+                                           min="0"
+                                           max="30">
+                                </div>
+                                <div style="flex: 0.8;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px;">
+                                        <i class="fas fa-calendar"></i> Năm
+                                    </label>
+                                    <select name="year" class="search-input" style="padding: 12px;">
+                                        <option value="2025" {% if request.GET.year == '2025' or not request.GET.year %}selected{% endif %}>2025</option>
+                                        <option value="2024" {% if request.GET.year == '2024' %}selected{% endif %}>2024</option>
+                                        <option value="2023" {% if request.GET.year == '2023' %}selected{% endif %}>2023</option>
+                                        <option value="2022" {% if request.GET.year == '2022' %}selected{% endif %}>2022</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px solid #e0e0e0; margin: 25px 0;"></div>
+
+                        <!-- Tuition Section -->
+                        <div style="margin-bottom: 25px;">
+                            <h3 style="font-size: 16px; margin-bottom: 15px; color: #0066cc; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-money-bill-wave"></i> Học phí (triệu/năm) (không bắt buộc)
+                            </h3>
+                            <div style="display: flex; gap: 15px;">
+                                <div style="flex: 1;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px;">
+                                        <i class="fas fa-coins"></i> Học phí tối thiểu
+                                    </label>
+                                    <input type="number" 
+                                           name="min_tuition" 
+                                           class="search-input" 
+                                           placeholder="VD: 10"
+                                           value="{{ request.GET.min_tuition|default:'' }}"
+                                           step="0.5"
+                                           min="0">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px;">
+                                        <i class="fas fa-coins"></i> Học phí tối đa
+                                    </label>
+                                    <input type="number" 
+                                           name="max_tuition" 
+                                           class="search-input" 
+                                           placeholder="VD: 30"
+                                           value="{{ request.GET.max_tuition|default:'' }}"
+                                           step="0.5"
+                                           min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button type="submit" style="padding: 14px 40px; background: linear-gradient(135deg, #0066cc 0%, #004499 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px; box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3); transition: all 0.3s;">
+                                <i class="fas fa-search"></i> Tìm kiếm ngành học
+                            </button>
+                            <p style="font-size: 13px; color: #666; margin-top: 10px;">
+                                <i class="fas fa-info-circle"></i> Có thể kết hợp: loại ngành + điểm + học phí (hoặc chỉ 1, 2 trong số đó)
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats">
+                {% if max_trial_score %}
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 15px;">
+                    <strong>Điểm thi thử cao nhất: {{ max_trial_score }} điểm</strong>
+                    {% if best_exam %}
+                    <div style="font-size: 13px; margin-top: 5px;">Lần {{ best_exam.attempt_number }} - Ngày {% if best_exam.date_exam %}{{ best_exam.date_exam|date:"d/m/Y" }}{% else %}{{ best_exam.created_at|date:"d/m/Y" }}{% endif %}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                Có <strong>{{ program_count }}</strong> ngành học
+            </div>
+
+            <!-- Program List -->
+            <div class="uni-list">
+                {% for program in list_program %}
+                <div class="uni-item">
+                    <div class="uni-code">{{ program.code }}</div>
+                    <div class="uni-info">
+                        <a href="{% url 'detailProgram' program.code %}" class="uni-name">
+                            {{ program.name }}
+                        </a>
+                        <div class="uni-location">
+                            {{ program.school.name }}
+                            {% if program.filtered_admissions %}
+                                • Điểm chuẩn {{ program.filtered_admissions.0.year }}: <strong style="color: #d32f2f;">{{ program.filtered_admissions.0.score }}</strong>
+                            {% elif program.admissions.first %}
+                                • Điểm chuẩn {{ program.admissions.first.year }}: <strong style="color: #d32f2f;">{{ program.admissions.first.score }}</strong>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="uni-favorite">
+                        <i class="far fa-star"></i>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="uni-item">
+                    <div class="uni-info">
+                        <p>Không tìm thấy ngành học nào phù hợp.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if list_program.has_other_pages %}
+            <div class="pagination">
+                {% if list_program.has_previous %}
+                <a class="page-link"
+                   href="{% url 'home_program' %}?{% if request.GET.search_type %}search_type={{ request.GET.search_type }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.min_score %}min_score={{ request.GET.min_score }}&{% endif %}{% if request.GET.max_score %}max_score={{ request.GET.max_score }}&{% endif %}{% if request.GET.year %}year={{ request.GET.year }}&{% endif %}{% if request.GET.min_tuition %}min_tuition={{ request.GET.min_tuition }}&{% endif %}{% if request.GET.max_tuition %}max_tuition={{ request.GET.max_tuition }}&{% endif %}page={{ list_program.previous_page_number }}">« Trước</a>
+                {% else %}
+                <span class="page-link disabled">« Trước</span>
+                {% endif %}
+
+                {% for i in list_program.paginator.page_range %}
+                    {% if list_program.number == i %}
+                    <span class="page-number active">{{ i }}</span>
+                    {% else %}
+                    <a class="page-number"
+                       href="{% url 'home_program' %}?{% if request.GET.search_type %}search_type={{ request.GET.search_type }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.min_score %}min_score={{ request.GET.min_score }}&{% endif %}{% if request.GET.max_score %}max_score={{ request.GET.max_score }}&{% endif %}{% if request.GET.year %}year={{ request.GET.year }}&{% endif %}{% if request.GET.min_tuition %}min_tuition={{ request.GET.min_tuition }}&{% endif %}{% if request.GET.max_tuition %}max_tuition={{ request.GET.max_tuition }}&{% endif %}page={{ i }}">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if list_program.has_next %}
+                <a class="page-link"
+                   href="{% url 'home_program' %}?{% if request.GET.search_type %}search_type={{ request.GET.search_type }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.min_score %}min_score={{ request.GET.min_score }}&{% endif %}{% if request.GET.max_score %}max_score={{ request.GET.max_score }}&{% endif %}{% if request.GET.year %}year={{ request.GET.year }}&{% endif %}{% if request.GET.min_tuition %}min_tuition={{ request.GET.min_tuition }}&{% endif %}{% if request.GET.max_tuition %}max_tuition={{ request.GET.max_tuition }}&{% endif %}page={{ list_program.next_page_number }}">Sau »</a>
+                {% else %}
+                <span class="page-link disabled">Sau »</span>
+                {% endif %}
+            </div>
+            {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/search_program.js' %}"></script>
+<script>
+function showSearchMode(mode) {
+    const categoryForm = document.getElementById('searchByCategory');
+    const advancedForm = document.getElementById('searchByAdvanced');
+    const btn1 = document.getElementById('searchModeBtn1');
+    const btn2 = document.getElementById('searchModeBtn2');
+    
+    if (mode === 'category') {
+        categoryForm.style.display = 'block';
+        advancedForm.style.display = 'none';
+        btn1.classList.add('active');
+        btn2.classList.remove('active');
+    } else {
+        categoryForm.style.display = 'none';
+        advancedForm.style.display = 'block';
+        btn1.classList.remove('active');
+        btn2.classList.add('active');
+    }
+}
+
+// Tự động bật tab phù hợp sau khi submit
+document.addEventListener('DOMContentLoaded', function () {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('search_type') === 'advanced') {
+        showSearchMode('advanced');
+    }
+});
+</script>
+{% endblock %}

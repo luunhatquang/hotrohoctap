@@ -1,0 +1,13 @@
+*.pyc
+__pycache__/
+env/
+.env
+db.sqlite3
+staticfiles/
+media/
+*.log
+.DS_Store
+*.sqlite3
+data_export.json
+data_backup.json
+

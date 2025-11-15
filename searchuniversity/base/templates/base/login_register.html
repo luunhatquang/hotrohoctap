@@ -1,0 +1,114 @@
+{% extends 'main.html'%}
+{% load static %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        {% if page == 'login' %}
+        <!-- Login Form -->
+        <div class="auth-header">
+            <i class="fas fa-graduation-cap" style="font-size: 48px; color: #667eea; margin-bottom: 15px;"></i>
+            <h1>Đăng nhập</h1>
+            <p>Chào mừng bạn quay trở lại!</p>
+        </div>
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="username">
+                    <i class="fas fa-user"></i> Tên đăng nhập
+                </label>
+                <input type="text" 
+                       id="username"
+                       name="username" 
+                       class="form-control"
+                       placeholder="Nhập tên đăng nhập"
+                       required/>
+            </div>
+
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i> Mật khẩu
+                </label>
+                <input type="password" 
+                       id="password"
+                       name="password" 
+                       class="form-control"
+                       placeholder="Nhập mật khẩu"
+                       required/>
+            </div>
+            
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Bạn chưa có tài khoản? <a href="{% url 'register' %}">Đăng ký ngay</a></p>
+        </div>
+
+        {% else %}
+        <!-- Register Form -->
+        <div class="auth-header">
+            <i class="fas fa-user-plus" style="font-size: 48px; color: #667eea; margin-bottom: 15px;"></i>
+            <h1>Đăng ký</h1>
+            <p>Tạo tài khoản mới để bắt đầu</p>
+        </div>
+
+        <form method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">
+                    {% if 'username' in field.name %}
+                        <i class="fas fa-user"></i>
+                    {% elif 'password' in field.name %}
+                        <i class="fas fa-lock"></i>
+                    {% endif %}
+                    {{ field.label }}
+                </label>
+                
+                {% if field.field.widget.input_type == 'password' %}
+                    <input type="password" 
+                           id="{{ field.id_for_label }}"
+                           name="{{ field.name }}"
+                           class="form-control"
+                           placeholder="{{ field.label }}"
+                           required>
+                {% else %}
+                    <input type="text" 
+                           id="{{ field.id_for_label }}"
+                           name="{{ field.name }}"
+                           class="form-control"
+                           placeholder="{{ field.label }}"
+                           {% if field.field.required %}required{% endif %}>
+                {% endif %}
+                
+                {% if field.help_text %}
+                    <span class="helptext">{{ field.help_text|safe }}</span>
+                {% endif %}
+                
+                {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-user-plus"></i> Đăng ký
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Bạn đã có tài khoản? <a href="{% url 'login' %}">Đăng nhập ngay</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

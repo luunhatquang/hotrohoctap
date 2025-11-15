@@ -1,0 +1,198 @@
+{% extends 'main.html'%}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/update_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container form-container">
+    <a href="{% url 'home' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span>Quay lại trang chủ</span>
+    </a>
+
+    <div class="form-card">
+        <h2>
+            <i class="fas fa-user-edit"></i>
+            Tạo hồ sơ học sinh
+        </h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            Điền thông tin của bạn để tạo hồ sơ tuyển sinh
+        </p>
+
+        <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Thông tin cá nhân -->
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #0066cc; border-bottom: 2px solid #0066cc; padding-bottom: 10px; margin-bottom: 20px;">
+                    <i class="fas fa-user"></i>
+                    Thông tin cá nhân
+                </h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.full_name.id_for_label }}">
+                            <i class="fas fa-id-card"></i>
+                            {{ form.full_name.label }}
+                        </label>
+                        {{ form.full_name }}
+                        {% if form.full_name.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.full_name.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.age.id_for_label }}">
+                            <i class="fas fa-birthday-cake"></i>
+                            {{ form.age.label }}
+                        </label>
+                        {{ form.age }}
+                        {% if form.age.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.age.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.phone.id_for_label }}">
+                            <i class="fas fa-phone"></i>
+                            {{ form.phone.label }}
+                        </label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.phone.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.address.id_for_label }}">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ form.address.label }}
+                        </label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.address.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mục tiêu tuyển sinh -->
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #0066cc; border-bottom: 2px solid #0066cc; padding-bottom: 10px; margin-bottom: 20px;">
+                    <i class="fas fa-bullseye"></i>
+                    Mục tiêu tuyển sinh
+                </h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.target_school.id_for_label }}">
+                            <i class="fas fa-university"></i>
+                            {{ form.target_school.label }}
+                        </label>
+                        {{ form.target_school }}
+                        {% if form.target_school.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.target_school.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.target_program_type.id_for_label }}">
+                            <i class="fas fa-book"></i>
+                            {{ form.target_program_type.label }}
+                        </label>
+                        {{ form.target_program_type }}
+                        {% if form.target_program_type.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.target_program_type.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.target_score.id_for_label }}">
+                        <i class="fas fa-chart-line"></i>
+                        {{ form.target_score.label }}
+                    </label>
+                    {{ form.target_score }}
+                    {% if form.target_score.help_text %}
+                        <span class="helptext">{{ form.target_score.help_text|safe }}</span>
+                    {% endif %}
+                    {% if form.target_score.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.target_score.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Điểm thi chứng chỉ -->
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #0066cc; border-bottom: 2px solid #0066cc; padding-bottom: 10px; margin-bottom: 20px;">
+                    <i class="fas fa-certificate"></i>
+                    Điểm thi chứng chỉ
+                </h3>
+                
+                <div class="form-group">
+                    <label for="{{ form.ielts_score.id_for_label }}">
+                        <i class="fas fa-language"></i>
+                        {{ form.ielts_score.label }}
+                    </label>
+                    {{ form.ielts_score }}
+                    {% if form.ielts_score.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.ielts_score.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Ẩn các trường form chưa được render thủ công -->
+            {% for field in form.hidden_fields %}
+                {{ field }}
+            {% endfor %}
+            
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-save"></i> Lưu hồ sơ
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'showQLDS' %}" class="action-link">
+                <i class="fas fa-eye"></i>
+                Xem danh sách hồ sơ
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

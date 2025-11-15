@@ -1,0 +1,141 @@
+{% extends 'base/base_layout.html'%}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/program_detail.css' %}">
+{% endblock %}
+
+{% block content_inner %}
+<div class="breadcrumb">
+                <a href="{% url 'home' %}">Tra cứu đại học</a>
+                <span>›</span>
+                <a href="{% url 'home_program' %}">Tìm ngành</a>
+                <span>›</span>
+                <span>{{ program.name }}</span>
+            </div>
+
+            <!-- Program Header -->
+            <div class="program-header">
+                <div class="program-title-section">
+                    <div class="program-code-badge">{{ program.code }}</div>
+                    <div>
+                        <h1 class="program-title">{{ program.name }}</h1>
+                        <div class="program-meta">
+                            <span><i class="fas fa-university"></i> {{ program.school.name }}</span>
+                            <span><i class="fas fa-tag"></i> {{ program.get_type_display }}</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-favorite-large">
+                    <i class="far fa-star"></i>
+                    <span>Yêu thích</span>
+                </button>
+            </div>
+
+            <!-- Admission Score Section -->
+            <div class="info-section">
+                <h2 class="section-heading">
+                    <i class="fas fa-chart-line"></i>
+                    Điểm chuẩn các năm
+                </h2>
+                <div class="score-timeline">
+                    {% if program.admissions.all %}
+                        {% for admission in program.admissions.all %}
+                        <div class="score-card">
+                            <div class="score-year">Năm {{ admission.year }}</div>
+                            <div class="score-value">{{ admission.score }}</div>
+                            <div class="score-label">Điểm chuẩn</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color: #666;">Chưa có thông tin điểm chuẩn</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Program Info Section -->
+            <div class="info-section">
+                <h2 class="section-heading">
+                    <i class="fas fa-info-circle"></i>
+                    Thông tin ngành học
+                </h2>
+                <div class="info-grid-detail">
+                    <div class="info-item-detail">
+                        <div class="info-label-detail">
+                            <i class="fas fa-book"></i>
+                            Tổ hợp môn
+                        </div>
+                        <div class="info-value-detail">
+                            {{ program.subject_combinations|default:"Chưa cập nhật" }}
+                        </div>
+                    </div>
+                    <div class="info-item-detail">
+                        <div class="info-label-detail">
+                            <i class="fas fa-money-bill-wave"></i>
+                            Học phí
+                        </div>
+                        <div class="info-value-detail">
+                            {% if program.tuition %}
+                                {{ program.tuition }} triệu/năm
+                            {% else %}
+                                Chưa cập nhật
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="info-item-detail">
+                        <div class="info-label-detail">
+                            <i class="fas fa-graduation-cap"></i>
+                            Loại hình đào tạo
+                        </div>
+                        <div class="info-value-detail">
+                            Đại học chính quy
+                        </div>
+                    </div>
+                    <div class="info-item-detail">
+                        <div class="info-label-detail">
+                            <i class="fas fa-clock"></i>
+                            Thời gian đào tạo
+                        </div>
+                        <div class="info-value-detail">
+                            4 năm
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- School Info Section -->
+            <div class="info-section">
+                <h2 class="section-heading">
+                    <i class="fas fa-university"></i>
+                    Thông tin trường
+                </h2>
+                <div class="school-info-card">
+                    <h3>{{ program.school.name }}</h3>
+                    <div class="school-details">
+                        <p><strong>Mã trường:</strong> {{ program.school.code }}</p>
+                        <p><strong>Khu vực:</strong> {{ program.school.get_region_display }}</p>
+                        <a href="{% url 'uni' program.school.code %}" class="btn-view-school">
+                            <i class="fas fa-arrow-right"></i>
+                            Xem thông tin trường
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="{% url 'home_program' %}" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Quay lại danh sách
+                </a>
+                <a href="{% url 'createQLDS' %}" class="btn-primary">
+                    <i class="fas fa-file-alt"></i>
+                    Tạo hồ sơ ứng tuyển
+                </a>
+            </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/program_detail.js' %}"></script>
+{% endblock %}
+
